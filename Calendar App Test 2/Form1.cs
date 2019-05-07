@@ -20,12 +20,24 @@ namespace Calendar_App_Test_2
 {
     public partial class Form1 : Form
     {
+        private static string Lesson {get; set;}
+        private static string Today { get; set;}
+        private static string LearningGoal { get; set;}
+
         public Form1()
         {
             string output = "";
             InitializeComponent();
             output = CalenderPrint();
             label1.Text = output;
+            label2.Text = "Lesson " + Lesson;
+            Lesson = "";
+            label3.Text = Today;
+            label4.Text = LearningGoal;
+            
+
+           
+
 
         }
         //-------------------------------------------------------------------------
@@ -69,7 +81,9 @@ namespace Calendar_App_Test_2
 
             // List events.
             Events events = request.Execute();
-            string description = "Upcoming Events:", LG = "";
+            string description = "Upcoming Events:";
+            int count = 0;
+            int lG1 = 0, lG2 = 0;
 
             if (events.Items != null && events.Items.Count > 0)
             {
@@ -79,9 +93,35 @@ namespace Calendar_App_Test_2
                     if (String.IsNullOrEmpty(when))
                     {
                         when = eventItem.Start.Date;
+                        if (Today == null)
+                        {
+                            Today = when;
+                        }
                     }
 
                     description = description + "\n" + when + " " + eventItem.Summary;
+
+                    if (count == 0)
+                    {
+                       for(int i = 0; i < eventItem.Summary.Length; i++)
+                        {
+                           if (char.IsDigit(eventItem.Summary[i]))
+                            {
+                                Lesson = eventItem.Summary.Substring(i, 3);
+                                i = eventItem.Summary.Length;
+                            }
+                        }            
+                       
+                       for(int i = 0; i < eventItem.Description.Length; i++)
+                        {
+                            lG1 = eventItem.Description.IndexOf("]");
+                            lG2 = eventItem.Description.LastIndexOf("[");
+                            LearningGoal = eventItem.Description.Substring(lG1+1, lG2 - lG1 - 1);
+                            i = eventItem.Description.Length;
+                        }
+                    }
+                    count++; 
+
                     
 
                     //if (String.IsNullOrEmpty(description))
@@ -102,7 +142,7 @@ namespace Calendar_App_Test_2
             return (description);
 
         }
-        public static string LearningGoal(string str)
+        /*public static string LearningGoal(string str)
         {
 
             int sep = 0;
@@ -113,13 +153,33 @@ namespace Calendar_App_Test_2
             lg = str.Substring(0, sep - 8);
 
             return (lg);
-        }
-
+        } 
+        */
 
 
         private void label1_Click(object sender, EventArgs e)
         {
             
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
