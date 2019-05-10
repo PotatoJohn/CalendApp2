@@ -22,18 +22,35 @@ namespace Calendar_App_Test_2
     {
         private static string Lesson {get; set;}
         private static string Today { get; set;}
-        private static string LearningGoal { get; set;}
+        private static string LearningTarget { get; set;}
+        private static string HomeWork { get; set; }
+        private static string Quiz { get; set; }
+        private static string TestDate { get; set; }
+        private static string QuizDate { get; set; }
 
         public Form1()
         {
             string output = "";
             InitializeComponent();
             output = CalenderPrint();
-            label1.Text = output;
+            //label1.Text = output;
             label2.Text = "Lesson " + Lesson;
             Lesson = "";
             label3.Text = Today;
-            label4.Text = LearningGoal;
+            label4.Text = "Learning Target: " + LearningTarget;
+            label5.Text = "HW: " + HomeWork;
+            if (Quiz == null)
+            {
+                label6.Text = "";
+            }
+            else
+            {
+                label6.Text = Quiz;
+            }
+            
+            label7.Text = TestDate;
+            label8.Text = QuizDate;
+
             
 
            
@@ -76,7 +93,7 @@ namespace Calendar_App_Test_2
             request.TimeMin = DateTime.Now;
             request.ShowDeleted = false;
             request.SingleEvents = true;
-            request.MaxResults = 10;
+            request.MaxResults = 14;
             request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
 
             // List events.
@@ -84,6 +101,7 @@ namespace Calendar_App_Test_2
             string description = "Upcoming Events:";
             int count = 0;
             int lG1 = 0, lG2 = 0;
+            Boolean foundQuiz = false, foundTest = false;
 
             if (events.Items != null && events.Items.Count > 0)
             {
@@ -103,21 +121,75 @@ namespace Calendar_App_Test_2
 
                     if (count == 0)
                     {
-                       for(int i = 0; i < eventItem.Summary.Length; i++)
+                       for(int i = 0; i < eventItem.Summary.Length; i++) //lesson
                         {
                            if (char.IsDigit(eventItem.Summary[i]))
                             {
                                 Lesson = eventItem.Summary.Substring(i, 3);
                                 i = eventItem.Summary.Length;
                             }
-                        }            
-                       
-                       for(int i = 0; i < eventItem.Description.Length; i++)
+                        }
+
+                        if (eventItem.Description != null)
                         {
-                            lG1 = eventItem.Description.IndexOf("]");
-                            lG2 = eventItem.Description.LastIndexOf("[");
-                            LearningGoal = eventItem.Description.Substring(lG1+1, lG2 - lG1 - 1);
-                            i = eventItem.Description.Length;
+
+                            for (int i = 0; i < eventItem.Description.Length; i++) //learning target
+                            {
+                                lG1 = eventItem.Description.IndexOf("]");
+                                lG2 = eventItem.Description.LastIndexOf("[");
+                                LearningTarget = eventItem.Description.Substring(lG1 + 1, lG2 - lG1 - 1);
+                                while (LearningTarget.IndexOf("<") >= 0)
+                                {
+                                    int loc = LearningTarget.IndexOf("<");
+                                    int closeloc = LearningTarget.IndexOf(">");
+                                    LearningTarget = LearningTarget.Remove(loc, closeloc - loc + 1);
+                                }
+                                i = eventItem.Description.Length;
+                            }
+                        }
+                        else
+                        {
+                            LearningTarget = "'Yeet' - The Council";
+                        }
+                       
+                       if (!eventItem.Summary.Contains("Quiz"))
+                        {
+                            HomeWork = eventItem.Summary;
+                                
+                        }
+                       else if (eventItem.Summary.Contains("Quiz") || eventItem.Summary.Contains("Test"))
+                        {
+                            Quiz = eventItem.Summary;
+                                
+                        }
+                        
+                       for (int i = 1; i < events.Items.Count; i++) //upcoming assignment                     
+                        {
+                            if (!foundQuiz)
+                            {
+                                if (events.Items[i].Summary.Contains("Quiz"))
+                                {
+                                    QuizDate = "Upcoming Quiz: " + events.Items[i].Start.Date;
+                                    foundQuiz = true;
+                                }
+                                if (!foundQuiz && i == events.Items.Count)
+                                {
+                                    
+                                    QuizDate = "No Quiz For 2 Weeks";
+                                }
+                            }
+                            if (!foundTest)
+                            {
+                                if (events.Items[i].Summary.Contains("Test"))
+                                {
+                                    TestDate = "Upcoming Test: " + events.Items[i].Start.Date;
+                                    foundTest = true;
+                                }
+                                if (!foundTest && i == events.Items.Count)
+                                {
+                                    TestDate = "No Test For 2 Weeks";
+                                }
+                            }
                         }
                     }
                     count++; 
@@ -178,6 +250,26 @@ namespace Calendar_App_Test_2
         }
 
         private void label4_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label6_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label7_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
         {
 
         }
